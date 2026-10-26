@@ -1,0 +1,32 @@
+/* ©Syed Ashaz Ahmed — 67-Day Math Restaurant OS */
+:root {
+  --ivory: #F9F6F0;
+  --ivory-dark: #EFECE6;
+  --clay: #C85A32;
+  --clay-dark: #9E4220;
+  --charcoal: #1E1E1C;
+  --sage: #3B6E5C;
+  --gold: #D4AF37;
+}
+body { background-color: var(--ivory); color: var(--charcoal); font-family: 'Inter', sans-serif; }
+h1, h2, h3, .serif-title { font-family: 'Cinzel', serif; }
+.pixel-font { font-family: 'Press Start 2P', monospace; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Track A: clay artisan bowls */
+.plate-track-a { border-left: 5px solid var(--clay); background: linear-gradient(135deg, #ffffff 0%, #fdf6f2 100%); border-radius: 12px; }
+/* Track B: sage geometric slates */
+.plate-track-b { border-left: 5px solid var(--sage); background: linear-gradient(135deg, #ffffff 0%, #f2f9f6 100%); border-radius: 4px; }
+.plate-snack { border-left: 5px solid var(--gold); background: linear-gradient(135deg, #fffdf7 0%, #fcf5e3 100%); border-radius: 18px; }
+.plate-odd { border-left: 5px solid #6366f1; background: #ffffff; }
+
+.drop-zone { min-height: 110px; transition: all 0.2s ease; }
+.drop-zone.drag-over { background-color: rgba(200, 90, 50, 0.14); border: 2px dashed var(--clay); }
+
+canvas { image-rendering: pixelated; }
+
+.custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #ccc5b9; border-radius: 3px; }
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

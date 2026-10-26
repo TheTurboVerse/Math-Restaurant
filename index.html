@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 67-Day 2D Math Restaurant Game & Archive — ©Syed Ashaz Ahmed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-orange-200">
+
+  <header class="bg-[#1E1E1C] text-[#F9F6F0] border-b-4 border-[#C85A32] sticky top-0 z-40 shadow-lg">
+    <div class="max-w-[1600px] mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-0.5 bg-[#C85A32] text-[11px] font-bold uppercase tracking-widest rounded">67-Day 2D Bistro RPG</span>
+          <span class="text-xs mono text-stone-400">OCT 26, 2026 — DEC 31, 2026</span>
+        </div>
+        <h1 class="text-lg md:text-2xl font-extrabold tracking-wider text-white mt-0.5">THE MATH RESTAURANT • 2D SPRITE KITCHEN &amp; ARCHIVE</h1>
+      </div>
+
+      <div class="text-center hidden xl:block border-x border-stone-700 px-6">
+        <p class="serif-title text-sm md:text-base tracking-[0.18em] text-[#D4AF37] font-bold uppercase">"Until Death All Defeat is Psychological"</p>
+        <p class="text-[11px] text-stone-400">2 Daily Meals + Snacks • Variable Time • ©Syed Ashaz Ahmed</p>
+      </div>
+
+      <nav class="flex flex-wrap items-center gap-1.5">
+        <button onclick="switchView('game')" id="tab-game" class="px-3 py-2 rounded text-xs font-semibold uppercase tracking-wider bg-[#C85A32] text-white transition">🕹️ 1. 2D Restaurant Game</button>
+        <button onclick="switchView('pass')" id="tab-pass" class="px-3 py-2 rounded text-xs font-semibold uppercase tracking-wider bg-stone-800 text-stone-300 hover:bg-stone-700 transition">🎨 2. Procreate Pass</button>
+        <button onclick="switchView('quest')" id="tab-quest" class="px-3 py-2 rounded text-xs font-semibold uppercase tracking-wider bg-stone-800 text-stone-300 hover:bg-stone-700 transition">📅 3. 67-Day Drive Vault</button>
+        <button onclick="switchView('library')" id="tab-library" class="px-3 py-2 rounded text-xs font-semibold uppercase tracking-wider bg-stone-800 text-stone-300 hover:bg-stone-700 transition">📚 4. Master Database</button>
+        <button onclick="openContextExporter()" class="px-3 py-2 rounded text-xs font-bold uppercase tracking-wider bg-[#D4AF37] text-black hover:bg-yellow-400 transition ml-1">⚡ Share Context</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6">
+
+    <!-- VIEW 1: 2D GAME -->
+    <section id="view-game" class="space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-8 bg-[#1E1E1C] border-4 border-[#C85A32] rounded-2xl p-4 shadow-xl text-white flex flex-col justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-stone-700">
+            <div class="flex items-center gap-3">
+              <span class="pixel-font text-[10px] px-2.5 py-1.5 bg-[#C85A32] text-white rounded" id="hud-day-badge">DAY 1 / 67</span>
+              <div>
+                <div class="text-xs font-bold text-[#D4AF37]" id="hud-date-text">Oct 26, 2026 • Phase 1 (Days 1–37)</div>
+                <div class="text-[11px] text-stone-400">Move with <strong>Arrows / WASD</strong> or click a station or dish. At the Dining Table press <strong>E</strong> to eat, <strong>M</strong> for sound.</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="changeGameDay(-1)" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 rounded text-xs font-bold">◀ Prev Day</button>
+              <button onclick="changeGameDay(1)" class="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 rounded text-xs font-bold">Next Day ▶</button>
+            </div>
+          </div>
+
+          <div class="relative w-full overflow-hidden rounded-xl border-2 border-stone-700 bg-[#2a2421]">
+            <canvas id="restaurant-canvas" width="900" height="470" class="w-full h-auto block cursor-pointer"></canvas>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-stone-700 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div class="bg-stone-800/90 border border-stone-600 rounded-lg p-2.5 flex items-center justify-between">
+              <div><span class="text-[10px] uppercase font-bold text-[#C85A32] block">Daily Meal 1 (Track A)</span><span id="stomach-meal-a" class="font-bold text-white truncate block">Hungry (0 Eaten)</span></div><span class="text-xl">🍲</span>
+            </div>
+            <div class="bg-stone-800/90 border border-stone-600 rounded-lg p-2.5 flex items-center justify-between">
+              <div><span class="text-[10px] uppercase font-bold text-[#3B6E5C] block">Daily Meal 2 (Track B)</span><span id="stomach-meal-b" class="font-bold text-white truncate block">Hungry (0 Eaten)</span></div><span class="text-xl">🍱</span>
+            </div>
+            <div class="bg-stone-800/90 border border-stone-600 rounded-lg p-2.5 flex items-center justify-between">
+              <div><span class="text-[10px] uppercase font-bold text-[#D4AF37] block">Prerequisite Snacks</span><span id="stomach-snack" class="font-bold text-white truncate block">0 Bite Sessions</span></div><span class="text-xl">🥨</span>
+            </div>
+            <div class="bg-stone-800/90 border border-stone-600 rounded-lg p-2.5 flex items-center justify-between">
+              <div><span class="text-[10px] uppercase font-bold text-emerald-400 block">Pantry Mastery</span><span id="stomach-pantry" class="font-bold text-white block">0 / 26 Dishes</span></div><span class="text-xl">🏆</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 bg-white border-2 border-stone-300 rounded-2xl p-5 shadow-md flex flex-col justify-between space-y-4">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+              <div>
+                <span id="recipe-slot-badge" class="px-2 py-0.5 text-[10px] font-bold uppercase bg-[#C85A32] text-white rounded">Track A • Meal 1</span>
+                <h2 id="recipe-dish-title" class="text-xl font-bold text-stone-900 mt-1">Select a Dish on the Counter</h2>
+              </div>
+              <div id="recipe-sprite-icon" class="w-12 h-12 rounded-xl bg-[#F9F6F0] border border-stone-300 flex items-center justify-center text-2xl shadow-inner">🍲</div>
+            </div>
+
+            <div id="recipe-richness-box" class="p-3 rounded-xl border text-xs space-y-1.5"></div>
+
+            <div class="bg-[#F9F6F0] p-3.5 rounded-xl border border-stone-200 space-y-2 text-xs">
+              <div class="font-bold uppercase tracking-wider text-stone-700 flex items-center justify-between">
+                <span>📜 Dish Recipe &amp; Ingredients</span>
+                <span id="recipe-domain-tag" class="mono text-[10px] text-[#C85A32]">Algebra</span>
+              </div>
+              <div><span class="font-semibold text-stone-600">Required Ingredients (Hard Prereqs):</span><div id="recipe-hard-list" class="flex flex-wrap gap-1 mt-1"></div></div>
+              <div><span class="font-semibold text-stone-600">Flavor Enhancers (Soft Links):</span><div id="recipe-soft-list" class="flex flex-wrap gap-1 mt-1"></div></div>
+              <div><span class="font-semibold text-stone-600">Unlocks Downstream Dishes:</span><div id="recipe-unlocks-list" class="flex flex-wrap gap-1 mt-1"></div></div>
+            </div>
+
+            <div class="border border-stone-200 rounded-xl p-3.5 space-y-2.5 text-xs">
+              <div class="font-bold uppercase tracking-wider text-stone-700">🍽️ Recipe Completion Steps (To Enter Pantry)</div>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center gap-1.5 p-2 rounded border border-stone-200 bg-stone-50 cursor-pointer hover:bg-stone-100"><input type="checkbox" id="chk-recipe-lessons" onchange="toggleSelectedDishCheck('lessonsDone')" class="accent-[#C85A32]"><span class="font-semibold">1. Lessons</span></label>
+                <label class="flex items-center gap-1.5 p-2 rounded border border-stone-200 bg-stone-50 cursor-pointer hover:bg-stone-100"><input type="checkbox" id="chk-recipe-pyq" onchange="toggleSelectedDishCheck('pyqDone')" class="accent-[#C85A32]"><span class="font-semibold">2. PYQ Test</span></label>
+                <label class="flex items-center gap-1.5 p-2 rounded border border-stone-200 bg-stone-50 cursor-pointer hover:bg-stone-100"><input type="checkbox" id="chk-recipe-journal" onchange="toggleSelectedDishCheck('journalDone')" class="accent-[#C85A32]"><span class="font-semibold">3. Journal</span></label>
+              </div>
+            </div>
+
+            <div class="bg-stone-900 text-white p-4 rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">🍴 Serve &amp; Eat Session Today</span>
+                <span id="recipe-sessions-count" class="mono text-xs text-stone-300">0 Sessions Eaten</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs text-stone-900">
+                <input id="eat-when" type="text" placeholder="Time (e.g. Morning / 8 PM)" class="px-2.5 py-1.5 rounded bg-white">
+                <input id="eat-given" type="text" placeholder="Effort (e.g. 1 Sess / 35 PYQs)" class="px-2.5 py-1.5 rounded bg-white">
+              </div>
+              <button onclick="eatSelectedDishInGame()" class="w-full py-2.5 bg-[#C85A32] hover:bg-[#9E4220] text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg transition transform active:scale-95">🍽️ Eat This Dish Now (+1 Session &amp; Log to Day)</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-stone-200 text-xs">
+            <button onclick="openSelectedDishEditor()" class="text-stone-600 hover:text-black font-semibold">⚙️ Edit Recipe / Prereqs</button>
+            <button onclick="switchView('quest')" class="text-[#C85A32] hover:underline font-bold">Open Day's Drive Vault &amp; Notes →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-stone-300 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base font-bold">Restaurant Menu Counter — Click Any Dish to Inspect or Eat</h3>
+            <p class="text-xs text-stone-500">Track A dishes: <strong>Clay Artisan Bowls</strong>. Track B dishes: <strong>Sage Bento Slates</strong>. Snacks: <strong>Golden Pretzel Bites</strong>.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="applyPreset('classic')" class="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded text-xs font-semibold">Preset A: Classic Menu</button>
+            <button onclick="applyPreset('trigSnacks')" class="px-3 py-1.5 bg-[#3B6E5C] hover:opacity-90 text-white rounded text-xs font-semibold">Preset B: Trig as Snacks + Early Comb/Prob</button>
+          </div>
+        </div>
+        <div id="game-shelf-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-2.5"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: PROCREATE PASS -->
+    <section id="view-pass" class="hidden space-y-6">
+      <div class="bg-white border border-stone-300 rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1">
+          <h2 class="text-lg font-bold text-stone-900">Procreate-Style Flow &amp; Prerequisite Canvas</h2>
+          <p class="text-xs text-stone-600">Drag and drop any dish between <strong>Meals 1–4, Snacks, Odd Jobs, or Later Menu</strong>. Every change updates the 2D kitchen.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openNewDishModal()" class="px-3 py-1.5 bg-stone-900 text-white text-xs font-semibold rounded hover:bg-stone-700">+ Custom Dish / Layer</button>
+          <button onclick="applyPreset('classic')" class="px-3 py-1.5 bg-stone-200 text-stone-800 text-xs font-semibold rounded hover:bg-stone-300">Preset A: Early P&amp;C + Trig in Meal 2</button>
+          <button onclick="applyPreset('trigSnacks')" class="px-3 py-1.5 bg-[#3B6E5C] text-white text-xs font-semibold rounded hover:opacity-90">Preset B: Trig as Snacks + Early Comb/Prob</button>
+          <button onclick="resetAllData()" class="px-3 py-1.5 border border-red-400 text-red-700 text-xs font-semibold rounded hover:bg-red-50">Reset Default</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+        <div class="bg-white p-3 rounded-lg border border-stone-200 flex items-center justify-between"><span><strong>Rich (🟢):</strong> All prerequisites satisfied.</span><span id="stat-rich-count" class="mono font-bold text-emerald-700 text-sm">0</span></div>
+        <div class="bg-white p-3 rounded-lg border border-stone-200 flex items-center justify-between"><span><strong>Poor (🔴):</strong> Missing hard prerequisite.</span><span id="stat-poor-count" class="mono font-bold text-red-600 text-sm">0</span></div>
+        <div class="bg-white p-3 rounded-lg border border-stone-200 flex items-center justify-between"><span><strong>Pantry:</strong> Mastered dishes.</span><span id="stat-pantry-count" class="mono font-bold text-[#C85A32] text-sm">0</span></div>
+        <div class="bg-white p-3 rounded-lg border border-stone-200 flex items-center justify-between"><span><strong>Total Sessions Eaten</strong></span><span id="stat-sessions-count" class="mono font-bold text-stone-900 text-sm">0</span></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-9 space-y-6">
+          <!-- Phase 1 -->
+          <div class="bg-[#EFECE6] border-2 border-stone-300 rounded-xl p-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-300 pb-2">
+              <div><span class="text-xs font-bold uppercase tracking-widest text-[#C85A32]">Phase 1 • 37 Days</span><h3 class="text-lg font-bold">Oct 26 – Dec 1, 2026 (Meals 1 &amp; 2 + Phase 1 Snacks)</h3></div>
+              <span class="text-xs mono bg-white px-2.5 py-1 rounded border border-stone-300">Days 1 to 37</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white rounded-lg p-3 border border-stone-300 shadow-sm flex flex-col">
+                <div class="flex items-center justify-between mb-2"><div><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#C85A32] text-white rounded">🍲 Track A • Meal 1</span><h4 class="font-bold text-sm mt-1">Algebra Essentials &amp; Combinatorics</h4></div><span class="text-[11px] mono text-stone-500" id="count-meal1">0 dishes</span></div>
+                <div id="zone-meal1" data-slot="meal1" class="drop-zone flex-1 space-y-2 p-2 bg-stone-50 rounded border border-dashed border-stone-300"></div>
+              </div>
+              <div class="bg-white rounded-lg p-3 border border-stone-300 shadow-sm flex flex-col">
+                <div class="flex items-center justify-between mb-2"><div><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#3B6E5C] text-white rounded">🍱 Track B • Meal 2</span><h4 class="font-bold text-sm mt-1">Line Geometry, Linear Algebra (Matrices, Vectors, 3D)</h4></div><span class="text-[11px] mono text-stone-500" id="count-meal2">0 dishes</span></div>
+                <div id="zone-meal2" data-slot="meal2" class="drop-zone flex-1 space-y-2 p-2 bg-stone-50 rounded border border-dashed border-stone-300"></div>
+              </div>
+            </div>
+            <div class="bg-amber-50/70 rounded-lg p-3 border border-amber-300">
+              <div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#D4AF37] text-black rounded">🥨 Phase 1 Snacks (3–4x / week)</span><span class="text-xs font-semibold text-stone-700">Calculus Prerequisites, Trig Bridges, Functions &amp; Limits</span></div><span class="text-[11px] mono text-stone-500" id="count-snacks1">0 snacks</span></div>
+              <div id="zone-snacks1" data-slot="snacks1" class="drop-zone grid grid-cols-1 md:grid-cols-2 gap-2 p-2 bg-white/80 rounded border border-dashed border-amber-400"></div>
+            </div>
+          </div>
+          <!-- Phase 2 -->
+          <div class="bg-[#EFECE6] border-2 border-stone-300 rounded-xl p-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-300 pb-2">
+              <div><span class="text-xs font-bold uppercase tracking-widest text-[#3B6E5C]">Phase 2 • 30 Days</span><h3 class="text-lg font-bold">Dec 2 – Dec 31, 2026 (Meals 3 &amp; 4 + Phase 2 Snacks)</h3></div>
+              <span class="text-xs mono bg-white px-2.5 py-1 rounded border border-stone-300">Days 38 to 67</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white rounded-lg p-3 border border-stone-300 shadow-sm flex flex-col">
+                <div class="flex items-center justify-between mb-2"><div><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#C85A32] text-white rounded">🍲 Track A • Meal 3</span><h4 class="font-bold text-sm mt-1">Binomial, Probability, Stats &amp; Algebra II/III</h4></div><span class="text-[11px] mono text-stone-500" id="count-meal3">0 dishes</span></div>
+                <div id="zone-meal3" data-slot="meal3" class="drop-zone flex-1 space-y-2 p-2 bg-stone-50 rounded border border-dashed border-stone-300"></div>
+              </div>
+              <div class="bg-white rounded-lg p-3 border border-stone-300 shadow-sm flex flex-col">
+                <div class="flex items-center justify-between mb-2"><div><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#3B6E5C] text-white rounded">🍱 Track B • Meal 4</span><h4 class="font-bold text-sm mt-1">Calculus (Continuity, Differentiability, AOD)</h4></div><span class="text-[11px] mono text-stone-500" id="count-meal4">0 dishes</span></div>
+                <div id="zone-meal4" data-slot="meal4" class="drop-zone flex-1 space-y-2 p-2 bg-stone-50 rounded border border-dashed border-stone-300"></div>
+              </div>
+            </div>
+            <div class="bg-amber-50/70 rounded-lg p-3 border border-amber-300">
+              <div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-[#D4AF37] text-black rounded">🥨 Phase 2 Snacks (3–4x / week)</span><span class="text-xs font-semibold text-stone-700">Inverse Trig &amp; Special Prerequisite Bite-Sessions</span></div><span class="text-[11px] mono text-stone-500" id="count-snacks2">0 snacks</span></div>
+              <div id="zone-snacks2" data-slot="snacks2" class="drop-zone grid grid-cols-1 md:grid-cols-2 gap-2 p-2 bg-white/80 rounded border border-dashed border-amber-400"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-3 space-y-6">
+          <div class="bg-white border border-stone-300 rounded-xl p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-1"><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-indigo-600 text-white rounded">Side Shelf</span><span class="text-[11px] mono text-stone-500" id="count-odd">0 dishes</span></div>
+            <h3 class="font-bold text-base">Odd Jobs (Flexible Specials)</h3>
+            <p class="text-[11px] text-stone-500 mb-3">Conics, Complex &amp; Quadratics, Circles, LPP. Drag into any Meal when ready.</p>
+            <div id="zone-odd" data-slot="odd" class="drop-zone space-y-2 p-2 bg-stone-50 rounded border border-dashed border-stone-300"></div>
+          </div>
+          <div class="bg-stone-900 text-stone-100 border border-stone-700 rounded-xl p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-1"><span class="text-[11px] font-bold uppercase px-2 py-0.5 bg-stone-700 text-amber-300 rounded">Post-Dec 31 / After Mains 1</span><span class="text-[11px] mono text-stone-400" id="count-later">0 dishes</span></div>
+            <h3 class="font-bold text-base text-white">Later Menu (Integral Calculus)</h3>
+            <p class="text-[11px] text-stone-400 mb-3">Parked safely so you have zero FOMO during the 67 days.</p>
+            <div id="zone-later" data-slot="later" class="drop-zone space-y-2 p-2 bg-stone-800/70 rounded border border-dashed border-stone-600 text-stone-900"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: DRIVE VAULT -->
+    <section id="view-quest" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white border border-stone-300 rounded-xl p-4 shadow-sm flex flex-col max-h-[82vh]">
+          <div class="flex items-center justify-between border-b border-stone-200 pb-3 mb-3">
+            <div><span class="text-[11px] font-bold uppercase text-[#C85A32]">67-Day Campaign Map</span><h2 class="text-lg font-bold">Select Any Day (Day 1 – Day 67)</h2></div>
+            <div class="text-right text-xs mono"><span id="quest-completed-days" class="font-bold text-emerald-700">0</span> / 67 Logged</div>
+          </div>
+          <div class="flex gap-2 mb-3 text-xs">
+            <button onclick="filterDays('all')" class="px-2.5 py-1 bg-stone-900 text-white rounded font-medium">All 67 Days</button>
+            <button onclick="filterDays('p1')" class="px-2.5 py-1 bg-stone-200 text-stone-800 rounded font-medium">Phase 1 (1–37)</button>
+            <button onclick="filterDays('p2')" class="px-2.5 py-1 bg-stone-200 text-stone-800 rounded font-medium">Phase 2 (38–67)</button>
+          </div>
+          <div id="days-grid" class="grid grid-cols-4 sm:grid-cols-5 gap-2 overflow-y-auto custom-scroll pr-1 flex-1"></div>
+        </div>
+
+        <div class="lg:col-span-7 bg-white border border-stone-300 rounded-xl p-5 shadow-sm space-y-5 max-h-[82vh] overflow-y-auto custom-scroll">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-3">
+            <div>
+              <div class="flex items-center gap-2"><span id="day-badge-phase" class="px-2 py-0.5 text-[11px] font-bold uppercase bg-[#C85A32] text-white rounded">Phase 1</span><span id="day-badge-date" class="mono text-xs text-stone-500">Oct 26, 2026</span></div>
+              <h2 id="day-title-heading" class="text-xl font-bold mt-1">Day 1 — Daily Command &amp; Drive Vault</h2>
+            </div>
+            <button onclick="saveCurrentDayLog()" class="px-4 py-2 bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded hover:bg-emerald-800 shadow">💾 Save Day Record</button>
+          </div>
+
+          <div class="bg-[#F9F6F0] p-3.5 rounded-lg border border-stone-300">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#C85A32] mb-1">⚔️ Thought of That Day (Mindset &amp; Psychological Log)</label>
+            <input id="day-thought" type="text" placeholder="e.g., Until Death All Defeat is Psychological — mastered Trig transformations today..." class="w-full bg-white border border-stone-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#C85A32]">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-3 border border-stone-200 rounded-lg bg-stone-50">
+              <label class="block text-xs font-bold text-stone-800 mb-1">📁 Google Drive: Day Folder Link</label>
+              <div class="flex gap-1.5"><input id="day-drive-folder" type="url" placeholder="Paste Drive folder link for this Day..." class="flex-1 bg-white border border-stone-300 rounded px-2.5 py-1.5 text-xs"><button onclick="openExternalDrive('day-drive-folder')" class="px-2.5 py-1.5 bg-stone-800 text-white text-xs rounded hover:bg-black">Open</button></div>
+            </div>
+            <div class="p-3 border border-stone-200 rounded-lg bg-stone-50">
+              <label class="block text-xs font-bold text-stone-800 mb-1">🗂️ Google Drive: Chapter/Lesson Format Folder</label>
+              <div class="flex gap-1.5"><input id="day-chapter-folder" type="url" placeholder="Paste organized Chapter Drive folder..." class="flex-1 bg-white border border-stone-300 rounded px-2.5 py-1.5 text-xs"><button onclick="openExternalDrive('day-chapter-folder')" class="px-2.5 py-1.5 bg-stone-800 text-white text-xs rounded hover:bg-black">Open</button></div>
+            </div>
+          </div>
+
+          <div class="border border-stone-300 rounded-lg p-3.5 space-y-3">
+            <div class="flex items-center justify-between"><h3 class="text-sm font-bold uppercase tracking-wider">🍽️ Meals &amp; Snacks Eaten Today</h3><span class="text-[11px] text-stone-500">Synced live with the 2D Restaurant Game</span></div>
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-2 bg-stone-100 p-2.5 rounded">
+              <select id="sess-track" class="sm:col-span-1 bg-white border border-stone-300 rounded px-2 py-1.5 text-xs">
+                <option value="Meal 1 (Track A)">Meal 1 (A)</option><option value="Meal 2 (Track B)">Meal 2 (B)</option><option value="Snack">Snack 🥨</option>
+                <option value="Meal 3 (Track A)">Meal 3 (A)</option><option value="Meal 4 (Track B)">Meal 4 (B)</option><option value="Odd Job">Odd Job</option>
+              </select>
+              <select id="sess-dish" class="sm:col-span-2 bg-white border border-stone-300 rounded px-2 py-1.5 text-xs"></select>
+              <input id="sess-when" type="text" placeholder="When? (e.g. 7:30 AM)" class="sm:col-span-1 bg-white border border-stone-300 rounded px-2 py-1.5 text-xs">
+              <input id="sess-given" type="text" placeholder="Given (e.g. 1 Session)" class="sm:col-span-1 bg-white border border-stone-300 rounded px-2 py-1.5 text-xs">
+              <button onclick="addSessionToDay()" class="sm:col-span-1 bg-[#C85A32] text-white font-bold text-xs rounded px-2 py-1.5 hover:bg-[#9E4220]">+ Eat</button>
+            </div>
+            <div id="day-sessions-list" class="space-y-1.5 text-xs"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><label class="block text-xs font-bold uppercase text-stone-700 mb-1">🎯 PYQs Solved &amp; Accuracy Notes</label><textarea id="day-pyqs" rows="3" placeholder="Which PYQs did you attempt today? Key traps noticed..." class="w-full border border-stone-300 rounded p-2 text-xs"></textarea></div>
+            <div><label class="block text-xs font-bold uppercase text-stone-700 mb-1">📓 Lecture / Source Notes Summary</label><textarea id="day-notes" rows="3" placeholder="Source used, core theorems covered, concepts unlocked..." class="w-full border border-stone-300 rounded p-2 text-xs"></textarea></div>
+            <div><label class="block text-xs font-bold uppercase text-stone-700 mb-1">⚡ Short Notes / Formula Triggers</label><textarea id="day-short-notes" rows="3" placeholder="Ultra-condensed revision triggers & identities..." class="w-full border border-stone-300 rounded p-2 text-xs"></textarea></div>
+            <div><label class="block text-xs font-bold uppercase text-stone-700 mb-1">🗺️ Domain Journal &amp; Mind-Map Reflection</label><textarea id="day-journal" rows="3" placeholder="How does today's dish connect to the rest of the domain?" class="w-full border border-stone-300 rounded p-2 text-xs"></textarea></div>
+          </div>
+
+          <div class="border-t border-stone-300 pt-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-bold uppercase tracking-wider">👁️ In-Game Drive &amp; Local Resource Previewer</h3>
+                <p class="text-[11px] text-stone-500">Attach a Google Drive file link (PDF/Doc/Image) or load a local file to preview it here.</p>
+              </div>
+              <label class="px-3 py-1.5 bg-stone-900 text-white text-xs font-semibold rounded cursor-pointer hover:bg-stone-700">📂 Preview Local PDF/Image
+                <input type="file" id="local-file-input" class="hidden" accept=".pdf,image/*,.txt,.md" onchange="previewLocalFile(event)">
+              </label>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <input id="res-title" type="text" placeholder="Resource Label (e.g. Trig Short Notes PDF)" class="border border-stone-300 rounded px-2.5 py-1.5 text-xs flex-1">
+              <select id="res-type" class="border border-stone-300 rounded px-2 py-1.5 text-xs bg-white"><option value="PYQ">PYQ Sheet</option><option value="Notes">Full Notes</option><option value="Short Notes">Short Notes</option><option value="Journal">Journal / Map</option></select>
+              <input id="res-url" type="url" placeholder="Paste Google Drive File Share Link or URL..." class="border border-stone-300 rounded px-2.5 py-1.5 text-xs flex-[2]">
+              <button onclick="addResourceToDay()" class="px-3 py-1.5 bg-[#3B6E5C] text-white text-xs font-bold rounded hover:opacity-90">+ Attach &amp; Preview</button>
+            </div>
+            <div id="day-resources-list" class="flex flex-wrap gap-2"></div>
+            <div id="preview-container" class="hidden border-2 border-stone-800 rounded-lg overflow-hidden bg-stone-900">
+              <div class="bg-stone-800 text-white px-3 py-1.5 flex items-center justify-between text-xs">
+                <span id="preview-title" class="font-semibold truncate">Resource Preview</span>
+                <button onclick="closePreview()" class="text-stone-400 hover:text-white font-bold">✕ Close Preview</button>
+              </div>
+              <iframe id="preview-iframe" class="w-full h-96 bg-white" src="about:blank"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: DATABASE -->
+    <section id="view-library" class="hidden space-y-6">
+      <div class="bg-white border border-stone-300 rounded-xl p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div><h2 class="text-xl font-bold">Master Library of Journals, PYQs, Notes &amp; Sessions</h2><p class="text-xs text-stone-600">Search across all 67 days. Filter by dish.</p></div>
+          <div class="flex flex-wrap gap-2">
+            <input id="db-search" oninput="renderDatabaseView()" type="text" placeholder="Search thoughts, chapters, PYQs, formulas..." class="border border-stone-300 rounded px-3 py-1.5 text-xs w-64">
+            <select id="db-filter-dish" onchange="renderDatabaseView()" class="border border-stone-300 rounded px-2.5 py-1.5 text-xs bg-white"><option value="all">All Chapters / Dishes</option></select>
+          </div>
+        </div>
+        <div id="db-results" class="space-y-3"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: EDIT DISH -->
+  <div id="modal-dish" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl border border-stone-300">
+      <div class="flex items-center justify-between border-b pb-2"><h3 id="modal-dish-header" class="text-lg font-bold">Customize Dish / Recipe Layer</h3><button onclick="closeDishModal()" class="text-stone-400 hover:text-black font-bold">✕</button></div>
+      <input type="hidden" id="edit-dish-id">
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold block mb-1">Dish / Chapter Title</label><input id="edit-dish-title" type="text" class="w-full border border-stone-300 rounded px-3 py-2"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="font-bold block mb-1">Domain / Section Tag</label><input id="edit-dish-domain" type="text" class="w-full border border-stone-300 rounded px-3 py-2"></div>
+          <div><label class="font-bold block mb-1">Assigned Kitchen Station</label>
+            <select id="edit-dish-slot" class="w-full border border-stone-300 rounded px-3 py-2 bg-white">
+              <option value="meal1">Meal 1 (Phase 1 • Track A)</option><option value="meal2">Meal 2 (Phase 1 • Track B)</option><option value="snacks1">Phase 1 Snacks</option>
+              <option value="meal3">Meal 3 (Phase 2 • Track A)</option><option value="meal4">Meal 4 (Phase 2 • Track B)</option><option value="snacks2">Phase 2 Snacks</option>
+              <option value="odd">Odd Jobs Shelf</option><option value="later">Later Menu (Post-Dec 31)</option>
+            </select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="font-bold block mb-1">Preferred Source / Recipe</label><input id="edit-dish-source" type="text" class="w-full border border-stone-300 rounded px-3 py-2"></div>
+          <div><label class="font-bold block mb-1">Google Drive Chapter Folder URL</label><input id="edit-dish-drive" type="url" class="w-full border border-stone-300 rounded px-3 py-2"></div>
+        </div>
+        <div><label class="font-bold block mb-1 text-red-700">Hard Ingredients (Blocks "Rich" status if missing)</label><div id="edit-hard-prereqs" class="grid grid-cols-2 gap-1.5 max-h-28 overflow-y-auto p-2 border rounded bg-stone-50"></div></div>
+        <div><label class="font-bold block mb-1 text-amber-700">Soft Ingredients (Advisory link warning)</label><div id="edit-soft-prereqs" class="grid grid-cols-2 gap-1.5 max-h-28 overflow-y-auto p-2 border rounded bg-stone-50"></div></div>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t">
+        <button id="btn-delete-dish" onclick="deleteCurrentDish()" class="px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded">Delete Dish</button>
+        <div class="flex gap-2"><button onclick="closeDishModal()" class="px-4 py-1.5 text-xs bg-stone-200 rounded font-semibold">Cancel</button><button onclick="saveDishModal()" class="px-4 py-1.5 text-xs bg-[#C85A32] text-white rounded font-bold">Save Recipe</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTEXT -->
+  <div id="modal-context" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl border border-stone-300">
+      <div class="flex items-center justify-between border-b pb-2">
+        <div><h3 class="text-lg font-bold">⚡ 1-Click Shareable Journey Context</h3><p class="text-xs text-stone-500">Copy this live snapshot anytime so you never have to re-explain your setup.</p></div>
+        <button onclick="closeContextExporter()" class="text-stone-400 hover:text-black font-bold">✕</button>
+      </div>
+      <textarea id="context-output" rows="14" readonly class="w-full mono text-xs bg-stone-900 text-emerald-300 p-3 rounded-lg border border-stone-700"></textarea>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex gap-2">
+          <button onclick="exportFullJSON()" class="px-3 py-1.5 bg-stone-800 text-white text-xs font-semibold rounded">⬇️ Backup JSON File</button>
+          <label class="px-3 py-1.5 bg-stone-200 text-stone-800 text-xs font-semibold rounded cursor-pointer">⬆️ Restore JSON<input type="file" accept=".json" class="hidden" onchange="importFullJSON(event)"></label>
+        </div>
+        <button onclick="copyContextText()" class="px-5 py-2 bg-[#C85A32] text-white text-xs font-bold uppercase tracking-wider rounded shadow">📋 Copy Snapshot to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-[#1E1E1C] text-stone-400 border-t-2 border-[#C85A32] mt-12 py-6 px-4 text-center text-xs">
+    <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="serif-title text-[#D4AF37] font-bold tracking-widest uppercase">Until Death All Defeat is Psychological</p>
+      <p class="font-semibold text-white tracking-wide">©Syed Ashaz Ahmed</p>
+      <p class="mono text-[11px] text-stone-400">67-Day 2D Math Restaurant OS • Oct 26 – Dec 31, 2026</p>
+    </div>
+  </footer>
+
+  <!-- Plain scripts (no modules) so it also works by double-clicking index.html. Order matters. -->
+  <script src="js/state.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/planner.js"></script>
+  <script src="js/vault.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
